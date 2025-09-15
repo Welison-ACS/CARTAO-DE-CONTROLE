@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cartão HIPERDIA - Corrigido (print-color-adjust)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    /* =========================
+       CONFIGURAÇÃO GERAL / IMPRESSÃO
+       ========================= */
+    @page {
+      size: A4;
+      margin: 1cm;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10pt;
+      color: #000;
+      background: #fff;
+    }
+
+    /* Cada .pagina é uma folha A4. Layout em duas colunas. */
+    .pagina {
+      width: calc(100% - 0cm);
+      box-sizing: border-box;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      column-gap: 16px; /* espaço horizontal entre cartões */
+      row-gap: 28px;    /* espaço vertical entre fileiras (útil para corte) */
+      page-break-after: always;
+
+      /* Compatibilidade: declarar prefixo e propriedade padrão.
+         VSCode reclama se faltar a propriedade padrão. */
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .cartao {
+      width: calc(50% - 8px); /* metade da folha (2 por linha) */
+      height: 420px;          /* ajuste aqui se quiser cartões maiores/menores */
+      box-sizing: border-box;
+      padding: 10px;
+      border: 1px solid #000;
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;       /* evita "atravessamento" entre cartões */
+      page-break-inside: avoid;
+      -webkit-column-break-inside: avoid;
+      -moz-column-break-inside: avoid;
+    }
+
+    /* Espaço extra para corte (opcional). row-gap já fornece espaço; esta classe é adicional. */
+    .espaco-corte {
+      width: 100%;
+      height: 40px; /* ajuste conforme sua necessidade de corte */
+      box-sizing: border-box;
+      background: transparent;
+    }
+
+    .logo {
+      width: 80px;
+      display: block;
+      margin: 0 auto 10px auto;
+    }
+
+    .titulo {
+      text-align: center;
+      font-weight: bold;
+      margin: 6px 0;
+      font-size: 10.5pt;
+    }
+
+    .info { margin-top: 8px; }
+    .info div { margin-bottom: 8px; }
+
+    .hiperdia {
+      text-align: center;
+      font-weight: bold;
+      border: 1px solid #000;
+      margin-top: 10px;
+      padding: 8px 6px;
+      font-size: 12pt;
+    }
+
+    /* Texto educativo */
+    .texto-verso {
+      font-size: 9pt; /* reduza se estiver transbordando (ex.: 8pt) */
+      line-height: 1.15;
+      margin-top: 6px;
+      /* Garante que o bloco não ultrapasse a área do cartão */
+      max-height: calc(420px - 24px);
+      overflow: hidden;
+      hyphens: auto;
+    }
+
+    .texto-verso h4 {
+      font-size: 10pt;
+      font-weight: bold;
+      background-color: #e9e9e9;
+      padding: 6px;
+      border-radius: 5px;
+      text-align: center;
+      margin: 0 0 8px 0;
+    }
+
+    .texto-verso ul { padding-left: 16px; margin: 0; }
+    .texto-verso ul li { margin-bottom: 6px; }
+
+    /* Tabela interior */
+    .tabela {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+      table-layout: fixed;
+      font-size: 9pt;
+    }
+
+    .tabela th, .tabela td {
+      border: 1px solid #000;
+      padding: 6px 4px;
+      text-align: center;
+      vertical-align: middle;
+      height: 26px; /* controle de altura das linhas: aumente para menos linhas, diminua para mais linhas */
+      box-sizing: border-box;
+      word-wrap: break-word;
+    }
+
+    .tabela th { background-color: #f0f0f0; font-weight: bold; }
+
+    /* Guia de corte (opcional): descomente no HTML para mostrar linhas tracejadas */
+    .guia-corte {
+      width: 100%;
+      border-top: 1px dashed #333;
+      margin: 0;
+      height: 0;
+    }
+
+    /* Observações de impressão (não CSS): 
+       - Ao imprimir/exportar para PDF: escala 100% / tamanho real.
+       - Para frente/verso manual: usar "virar pela borda curta" (short-edge flip).
+       - Testar com 1 folha antes do lote.
+    */
+  </style>
+</head>
+<body>
+
+  <!-- PÁGINA 1 (frentes/costas) -->
+  <div class="pagina">
+
+    <!-- CARTÃO 1 - FRENTE (texto educativo) -->
+    <div class="cartao">
+      <div class="texto-verso">
+        <h4>O tratamento eficaz da sua pressão depende de você e de seu médico.<br>Saiba como fazer para auxiliá-lo.</h4>
+        <ul>
+          <li>Você também tem um papel a cumprir para tornar o tratamento ainda mais eficaz. Sua colaboração é muito importante.</li>
+          <li>Quando a hipertensão é tratada corretamente e a tempo, é possível prevenir complicações graves.</li>
+          <li>É importante que você tome corretamente seu remédio.</li>
+          <li>Não interrompa o tratamento sem autorização do médico.</li>
+          <li>Controle periodicamente sua pressão arterial.</li>
+          <li>Diminua o sal nos alimentos.</li>
+          <li>Evite o álcool e o tabagismo.</li>
+          <li>Faça exercícios físicos sob orientação médica.</li>
+          <li>Use este espaço para instruções locais ou contatos.</li>
+        </ul>
+      </div>
+    </div>
+
+
+
+<style>
+  /* apenas a regra do HIPERDIA com cantos arredondados */
+  .hiperdia {
+    text-align: center;
+    font-weight: bold;
+    border: 1px solid #000;
+    margin-top: 20px;
+    padding: 10px;
+    font-size: 12pt;
+    border-radius: 12px; /* <-- cantos arredondados */
+    /* opcional: background, cor do texto, sombra, etc. */
+  }
+</style>
+
+
+    
+
+    <!-- CARTÃO 1 - COSTAS -->
+    <div class="cartao">
+      <img src="logo.png" alt="Logo" class="logo" />
+      <div class="titulo">
+        PREFEITURA MUNICIPAL DE PORTEIRAS<br>
+        SECRETARIA MUNICIPAL DE SAÚDE
+      </div>
+
+      <div style="width: 100%; height: 20px;"></div>
+
+      <div class="info">
+        <div>Nome: __________________________________</div>
+        <div>DN: ________________ Sangue: ____________</div>
+        <div>Endereço: _______________________________</div>
+        <div>Médico (a): ______________________________</div>
+        <div>ESF: ___________ ACS: ___________________</div>
+      </div>
+
+      <div style="width: 100%; height: 20px;"></div>
+
+      <div class="hiperdia">HIPERDIA</div> 
+    </div>
+
+    <!-- Espaço opcional para corte horizontal -->
+    <div class="espaco-corte" aria-hidden="true"></div>
+
+    <!-- CARTÃO 2 - FRENTE -->
+    <div class="cartao">
+      <div class="texto-verso">
+        <h4>O tratamento eficaz da sua pressão depende de você e de seu médico.<br>Saiba como fazer para auxiliá-lo.</h4>
+        <ul>
+          <li>Você também tem um papel a cumprir para tornar o tratamento ainda mais eficaz. Sua colaboração é muito importante.</li>
+          <li>Quando a hipertensão é tratada corretamente e a tempo, é possível prevenir complicações graves.</li>
+          <li>É importante que você tome corretamente seu remédio.</li>
+          <li>Não interrompa o tratamento sem autorização do médico.</li>
+          <li>Controle periodicamente sua pressão arterial.</li>
+          <li>Diminua o sal nos alimentos.</li>
+          <li>Evite o álcool e o tabagismo.</li>
+          <li>Faça exercícios físicos sob orientação médica.</li>
+          <li>Use este espaço para instruções locais ou contatos.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- CARTÃO 2 - COSTAS -->
+    <div class="cartao">
+      <img src="logo.png" alt="Logo" class="logo" />
+      <div class="titulo">
+        PREFEITURA MUNICIPAL DE PORTEIRAS<br>
+        SECRETARIA MUNICIPAL DE SAÚDE
+      </div>
+
+      <div style="width: 100%; height: 20px;"></div>
+
+      <div class="info">
+        <div>Nome: __________________________________</div>
+        <div>DN: ________________ Sangue: ____________</div>
+        <div>Endereço: _______________________________</div>
+        <div>Médico (a): ______________________________</div>
+        <div>ESF: ___________ ACS: ___________________</div>
+      </div>
+
+      <div style="width: 100%; height: 20px;"></div>
+
+      <div class="hiperdia">HIPERDIA</div> 
+    </div>
+
+  </div> <!-- /pagina 1 -->
+
+  <!-- PÁGINA 2 (interiores/tabelas) -->
+  <div class="pagina">
+
+    <!-- CARTÃO 1 - INTERIOR -->
+    <div class="cartao">
+      <table class="tabela" aria-label="Tabela Cartão 1">
+        <thead>
+          <tr><th>DATA</th><th>P.A.</th><th>GLICEMIA</th><th>PESO</th><th>TERAPÊUTICA</th></tr>
+        </thead>
+        <tbody>
+          <!-- 12 linhas padrão; ajuste o número replicando/removendo <tr> -->
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CARTÃO 2 - INTERIOR -->
+    <div class="cartao">
+      <table class="tabela" aria-label="Tabela Cartão 2">
+        <thead>
+          <tr><th>DATA</th><th>P.A.</th><th>GLICEMIA</th><th>PESO</th><th>TERAPÊUTICA</th></tr>
+        </thead>
+        <tbody>
+          <!-- Linhas do cartão 2 -->
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="espaco-corte" aria-hidden="true"></div>
+
+    <!-- CARTÃO 3 - INTERIOR -->
+    <div class="cartao">
+      <table class="tabela" aria-label="Tabela Cartão 3">
+        <thead>
+          <tr><th>DATA</th><th>P.A.</th><th>GLICEMIA</th><th>PESO</th><th>TERAPÊUTICA</th></tr>
+        </thead>
+        <tbody>
+          <!-- ajuste número de linhas conforme desejar -->
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CARTÃO 4 - INTERIOR -->
+    <div class="cartao">
+      <table class="tabela" aria-label="Tabela Cartão 4">
+        <thead>
+          <tr><th>DATA</th><th>P.A.</th><th>GLICEMIA</th><th>PESO</th><th>TERAPÊUTICA</th></tr>
+        </thead>
+        <tbody>
+          <!-- ajuste número de linhas conforme desejar -->
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div> <!-- /pagina 2 -->
+
+</body>
+</html>
