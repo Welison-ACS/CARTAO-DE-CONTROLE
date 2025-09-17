@@ -1,309 +1,295 @@
-<!doctype html>
-<html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
+  <title>Cartão HIPERDIA - Ajustado</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Impressão de Cartões - HIPERDIA</title>
-
-  <!-- Mantemos html2pdf apenas para fallback quando popups são bloqueados -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
   <style>
-    :root{
-      --bg: #f6f8fb;
-      --primary: #2b6cb0;
-      --accent: #4fd1c5;
-      --text: #0f1724;
-      --btn-radius: 12px;
-      --btn-padding: 18px 28px;
-      --shadow: 0 6px 18px rgba(16,24,40,0.08);
-    }
+    @page { size: A4; margin: 1cm; }
+    body { margin:0; padding:0; font-family: Arial, Helvetica, sans-serif; font-size:10pt; color:#000; background:#fff; }
 
-    html,body{height:100%; margin:0; font-family: "Segoe UI", Roboto, Arial, sans-serif; color:var(--text);}
-    body{background:var(--bg); display:flex; align-items:center; justify-content:center; padding:24px;}
-
-    .app {
-      width: 640px;
-      max-width: calc(100% - 48px);
-      background: #fff;
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      padding: 22px;
+    /* Cada .pagina é uma folha A4 */
+    .pagina {
+      width: calc(100% - 0cm);
       box-sizing: border-box;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      column-gap: 16px;
+      row-gap: 28px;
+      page-break-after: always;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
-    h1{margin:0 0 8px 0; font-size:20px;}
-    p.lead{margin:0 0 12px 0; color: #334155;}
-
-    .controls {
-      display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap;
-      margin-bottom: 18px;
+    .cartao {
+      width: calc(50% - 8px);
+      height: 420px;
+      box-sizing: border-box;
+      padding: 10px;
+      border: 1px solid #000;
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+      page-break-inside: avoid;
     }
 
-    .btn {
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      padding: var(--btn-padding);
-      font-size:16px;
-      border-radius: var(--btn-radius);
-      border: none;
-      cursor:pointer;
-      box-shadow: 0 6px 12px rgba(15,23,42,0.06);
-      transition: transform .12s ease, box-shadow .12s ease;
-      user-select: none;
-    }
-    .btn:active{ transform: translateY(1px); }
+    .espaco-corte { width:100%; height:40px; box-sizing:border-box; background:transparent; }
 
-    .btn-primary {
-      background: linear-gradient(180deg,var(--primary), #1e4f8a);
-      color: #fff;
-    }
-    .btn-primary:hover{ transform: translateY(-3px); box-shadow: 0 10px 22px rgba(16,24,40,0.12); }
+    .logo { width:80px; display:block; margin:0 auto 10px auto; }
 
-    .btn-secondary {
-      background: linear-gradient(180deg,#fff,#f8fafc);
-      color: var(--primary);
-      border: 1px solid #e2e8f0;
-    }
-    .btn-secondary:hover{ transform: translateY(-3px); box-shadow: 0 8px 18px rgba(16,24,40,0.06); }
+    .titulo { text-align:center; font-weight:bold; margin:6px 0; font-size:10.5pt; }
 
-    .print-options {
-      margin-top: 8px;
-      display:flex;
-      gap:12px;
-      align-items:center;
+    .info { margin-top:8px; }
+    .info div { margin-bottom:8px; }
+
+    .hiperdia {
+      text-align:center;
+      font-weight:bold;
+      border:1px solid #000;
+      margin-top:10px;
+      padding:8px 6px;
+      font-size:12pt;
+      border-radius:12px;
     }
 
-    .preview {
-      margin-top: 14px;
-      border-top: 1px dashed #e6eef8;
-      padding-top: 14px;
-      color:#334155;
-      font-size:14px;
+    .tabela {
+      width:100%;
+      border-collapse:collapse;
+      margin-top:6px;
+      table-layout:fixed;
+      font-size:9pt;
     }
 
-    .status {
-      margin-left: 12px;
-      font-size: 14px;
-      color:#475569;
+    .tabela th, .tabela td {
+      border:1px solid #000;
+      padding:6px 4px;
+      text-align:center;
+      vertical-align:middle;
+      height:26px;
+      box-sizing:border-box;
+      word-wrap:break-word;
     }
 
-    .note { font-size:12px; color:#64748b; margin-top:10px; }
-
-    .ico { width:18px; height:18px; display:inline-block; vertical-align:middle; }
-
-    @media (max-width:720px){
-      .controls{flex-direction:column; align-items:stretch;}
-      .btn{width:100%;}
-    }
+    .tabela th { background-color:#f0f0f0; font-weight:bold; }
   </style>
 </head>
 <body>
-  <main class="app" role="main">
-    <h1>Impressão de Cartões — HIPERDIA</h1>
-    <p class="lead">Clique em <strong>Imprimir cartão</strong> e escolha se quer imprimir a <em>Frente</em> ou o <em>Verso</em>. O arquivo <code>model.html</code> deve estar na mesma pasta.</p>
 
-    <div class="controls">
-      <div style="display:flex;flex-direction:column;">
-        <button class="btn btn-secondary" id="btn-print-card" title="Imprimir cartão (mostra opções frente/verso)">
-          <svg class="ico" viewBox="0 0 24 24" fill="none"><path d="M6 9V3h12v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="9" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.6"/></svg>
-          Imprimir cartão
-        </button>
+  <!-- PÁGINA 1 -->
+  <div class="pagina">
 
-        <div class="print-options" id="print-options" style="display:none;">
-          <button class="btn btn-primary" id="btn-print-front" title="Imprime apenas a frente (página 1)">
-            Imprimir Frente
-          </button>
-          <button class="btn btn-primary" id="btn-print-back" title="Imprime apenas o verso (página 2)">
-            Imprimir Verso
-          </button>
-        </div>
+    <!-- CARTÃO 1 - FRENTE (tabela antiga sem TERAPÊUTICA) -->
+    <div class="cartao">
+      <table class="tabela" aria-label="Tabela Frente 1">
+        <thead>
+          <tr><th>DATA</th><th>P.A.</th><th>GLICEMIA</th><th>PESO</th></tr>
+        </thead>
+        <tbody>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CARTÃO 1 - COSTAS (replicado do modelo do Cartão 2 - hiperdia acima + SUS) -->
+    <div class="cartao">
+      <img src="logo.png" alt="Logo" class="logo" />
+      <div class="titulo">
+        PREFEITURA MUNICIPAL DE PORTEIRAS<br>
+        SECRETARIA MUNICIPAL DE SAÚDE
       </div>
 
-      <div class="status" id="status">Pronto</div>
+      <div class="hiperdia">HIPERDIA</div>
+
+      <div style="width:100%; height:20px;"></div>
+
+      <div class="info">
+        <div>Nome: __________________________________</div>
+        <div>DN: ________________ Sangue: ____________</div>
+        <div>Endereço: _______________________________</div>
+        <div>Médico (a): ______________________________</div>
+        <div>ESF: ___________ ACS: ___________________</div>
+        <div>SUS: __________________________________</div>
+      </div>
+
+      <div style="width:100%; height:20px;"></div>
     </div>
 
-    <div class="preview" id="preview">
-      <strong>Observações:</strong>
-      <ul>
-        <li>Os botões <em>Imprimir Frente</em> / <em>Imprimir Verso</em> abrem a janela de impressão com apenas a página solicitada.</li>
-        <li>Se a janela de impressão for bloqueada, o sistema tenta gerar um PDF da página como fallback e fazer o download.</li>
-      </ul>
-      <div class="note">Essa é uma gambiarra que vanessa pediu, se nao funcionar bem, a culpa é dela, viu Camila???.</div>
+    <div class="espaco-corte" aria-hidden="true"></div>
+
+    <!-- CARTÃO 2 - FRENTE -->
+    <div class="cartao">
+      <table class="tabela" aria-label="Tabela Frente 2">
+        <thead>
+          <tr><th>DATA</th><th>P.A.</th><th>GLICEMIA</th><th>PESO</th></tr>
+        </thead>
+        <tbody>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+          <tr><td></td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
     </div>
-  </main>
 
-  <script>
-    // utilitários
-    const $ = id => document.getElementById(id);
-    const setStatus = txt => { const s = $('status'); if (s) s.textContent = txt; console.log('[STATUS]', txt); };
+    <!-- CARTÃO 2 - COSTAS (já com hiperdia posicionado e SUS) -->
+    <div class="cartao">
+      <img src="logo.png" alt="Logo" class="logo" />
+      <div class="titulo">
+        PREFEITURA MUNICIPAL DE PORTEIRAS<br>
+        SECRETARIA MUNICIPAL DE SAÚDE
+      </div>
 
-    // busca model.html e converte para DOM Document
-    async function fetchModelDoc() {
-      const resp = await fetch('model.html', { cache: 'no-store' });
-      if (!resp.ok) throw new Error('Não foi possível carregar model.html (status ' + resp.status + ')');
-      const text = await resp.text();
-      const parser = new DOMParser();
-      return parser.parseFromString(text, 'text/html');
-    }
+      <div class="hiperdia">HIPERDIA</div>
 
-    // extrai apenas o CSS dentro das tags <style> do model.html
-    function extractCombinedStyles(doc) {
-      try {
-        const styleEls = doc.querySelectorAll('style');
-        let css = '';
-        styleEls.forEach(s => { css += '\n/* from model.html */\n' + s.innerHTML; });
-        return css;
-      } catch (e) {
-        console.warn('Erro ao extrair styles:', e);
-        return '';
-      }
-    }
+      <div style="width:100%; height:20px;"></div>
 
-    // aguarda imagens dentro de um root carregarem (ou timeout)
-    function waitForImages(root, timeout = 6000) {
-      const imgs = Array.from(root.querySelectorAll('img'));
-      if (!imgs.length) return Promise.resolve();
-      return Promise.all(imgs.map(img => new Promise(resolve => {
-        if (img.complete && img.naturalWidth !== 0) return resolve();
-        if (img.complete) return resolve();
-        const onDone = () => { cleanup(); resolve(); };
-        const onErr  = () => { cleanup(); console.warn('imagem falhou:', img.src); resolve(); };
-        const cleanup = () => {
-          img.removeEventListener('load', onDone);
-          img.removeEventListener('error', onErr);
-        };
-        img.addEventListener('load', onDone);
-        img.addEventListener('error', onErr);
-        setTimeout(() => { cleanup(); resolve(); }, timeout);
-      })));
-    }
+      <div class="info">
+        <div>Nome: __________________________________</div>
+        <div>DN: ________________ Sangue: ____________</div>
+        <div>Endereço: _______________________________</div>
+        <div>Médico (a): ______________________________</div>
+        <div>ESF: ___________ ACS: ___________________</div>
+        <div>SUS: __________________________________</div>
+      </div>
 
-    // Imprime apenas uma página (.pagina[index]) do model
-    async function printSinglePage(pageIndex) {
-      setStatus('Preparando impressão...');
-      try {
-        const doc = await fetchModelDoc();
-        const pages = doc.querySelectorAll('.pagina');
-        if (!pages || pages.length === 0) throw new Error('Nenhuma .pagina encontrada em model.html');
-        const page = pages[pageIndex];
-        if (!page) throw new Error('Página solicitada não existe no model.html');
+      <div style="width:100%; height:20px;"></div>
+    </div>
 
-        const css = extractCombinedStyles(doc);
+  </div> <!-- /pagina 1 -->
 
-        // montar HTML de impressão com somente os estilos necessários
-        const printHTML = `
-          <!doctype html>
-          <html>
-            <head>
-              <meta charset="utf-8" />
-              <title>Impressão - página ${pageIndex+1}</title>
-              <style>
-                html,body{margin:0;padding:0;background:#fff;color:#000;}
-                ${css}
-              </style>
-            </head>
-            <body>
-              ${page.outerHTML}
-            </body>
-          </html>
-        `;
+  <!-- PÁGINA 2 -->
+  <div class="pagina">
 
-        const printWin = window.open('', '_blank');
-        if (!printWin) {
-          // popup bloqueado -> gerar PDF como fallback
-          setStatus('Janela de impressão bloqueada. Gerando PDF como fallback...');
-          await fallbackDownloadSingle(page, pageIndex, css);
-          return;
-        }
+    <!-- CARTÃO 1 - INTERIOR (modelo modificado: MEDICAMENTOS + tabela curta) -->
+    <div class="cartao">
+      <div style="border:1px solid #000; border-radius:12px; padding:8px; margin-bottom:10px; text-align:center; font-weight:bold;">
+        MEDICAMENTOS
+        <div style="margin-top:8px; text-align:left; font-weight:normal;">
+          <div style="border-bottom:1px solid #000; height:20px; margin-bottom:6px;"></div>
+          <div style="border-bottom:1px solid #000; height:20px; margin-bottom:6px;"></div>
+          <div style="border-bottom:1px solid #000; height:20px; margin-bottom:6px;"></div>
+          <div style="border-bottom:1px solid #000; height:20px; margin-bottom:6px;"></div>
+          <div style="border-bottom:1px solid #000; height:20px; margin-bottom:6px;"></div>
+          <div style="border-bottom:1px solid #000; height:20px;"></div>
+        </div>
+      </div>
+      <table class="tabela" aria-label="Tabela Cartão 1">
+        <thead>
+          <tr><th style="width:30%;">DATA</th><th style="width:70%;">P.A.</th></tr>
+        </thead>
+        <tbody>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
 
-        printWin.document.open();
-        printWin.document.write(printHTML);
-        printWin.document.close();
+    <!-- CARTÃO 2 - INTERIOR (modelo modificado: tabela só DATA e P.A., linhas maiores) -->
+    <div class="cartao">
+      <table class="tabela" aria-label="Tabela Cartão 2">
+        <thead>
+          <tr><th style="width:30%;">DATA</th><th style="width:70%;">P.A.</th></tr>
+        </thead>
+        <tbody>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
 
-        printWin.focus();
-        setTimeout(() => {
-          try {
-            printWin.print();
-            setStatus('Diálogo de impressão aberto. Se não houver impressora, cancele e aguarde o fallback.');
-          } catch (e) {
-            console.warn('Erro ao chamar print():', e);
-            fallbackDownloadSingle(page, pageIndex, css);
-          }
-        }, 700);
+    <div class="espaco-corte" aria-hidden="true"></div>
 
-      } catch (err) {
-        console.error(err);
-        setStatus('Erro: ' + (err.message || err));
-        alert('Erro ao preparar impressão: ' + (err.message || err));
-      }
-    }
+    <!-- CARTÃO 3 - INTERIOR (replicado do CARTÃO 1) -->
+    <div class="cartao">
+      <div style="border:1px solid #000; border-radius:12px; padding:8px; margin-bottom:10px; text-align:center; font-weight:bold;">
+        MEDICAMENTOS
+        <div style="margin-top:8px; text-align:left; font-weight:normal;">
+          <div style="border-bottom:1px solid #000; height:20px; margin-bottom:6px;"></div>
+          <div style="border-bottom:1px solid #000; height:20px; margin-bottom:6px;"></div>
+          <div style="border-bottom:1px solid #000; height:20px; margin-bottom:6px;"></div>
+          <div style="border-bottom:1px solid #000; height:20px; margin-bottom:6px;"></div>
+          <div style="border-bottom:1px solid #000; height:20px; margin-bottom:6px;"></div>
+          <div style="border-bottom:1px solid #000; height:20px;"></div>
+        </div>
+      </div>
+      <table class="tabela" aria-label="Tabela Cartão 3">
+        <thead>
+          <tr><th style="width:30%;">DATA</th><th style="width:70%;">P.A.</th></tr>
+        </thead>
+        <tbody>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
 
-    // Fallback: gera e baixa PDF de uma única página (usado se popup bloqueado ou print falhar)
-    async function fallbackDownloadSingle(pageElement, pageIndex, css='') {
-      setStatus('Gerando PDF (fallback)...');
-      try {
-        // criar container visível para render (opacity:0)
-        const container = document.createElement('div');
-        container.style.position = 'fixed';
-        container.style.left = '0';
-        container.style.top = '0';
-        container.style.width = '210mm';
-        container.style.boxSizing = 'border-box';
-        container.style.opacity = '0';
-        container.style.pointerEvents = 'none';
-        container.style.zIndex = '9999';
+    <!-- CARTÃO 4 - INTERIOR (replicado do CARTÃO 2) -->
+    <div class="cartao">
+      <table class="tabela" aria-label="Tabela Cartão 4">
+        <thead>
+          <tr><th style="width:30%;">DATA</th><th style="width:70%;">P.A.</th></tr>
+        </thead>
+        <tbody>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+          <tr><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
 
-        if (css) {
-          const s = document.createElement('style');
-          s.type = 'text/css';
-          s.appendChild(document.createTextNode(css));
-          container.appendChild(s);
-        }
+  </div> <!-- /pagina 2 -->
 
-        container.appendChild(pageElement.cloneNode(true));
-        document.body.appendChild(container);
-
-        // aguardar fontes e imagens
-        if (document.fonts && document.fonts.ready) {
-          await document.fonts.ready.catch(()=>{});
-        }
-        await waitForImages(container, 7000);
-
-        const opt = {
-          margin:       [10,10,10,10],
-          filename:     `cartao_pagina${pageIndex+1}.pdf`,
-          image:        { type: 'jpeg', quality: 0.98 },
-          html2canvas:  { scale: 2, useCORS: true, logging: false },
-          jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        await html2pdf().set(opt).from(container).save();
-        document.body.removeChild(container);
-        setStatus('PDF da página ' + (pageIndex+1) + ' gerado e baixado.');
-      } catch (err) {
-        console.error(err);
-        setStatus('Erro ao gerar PDF de fallback: ' + (err.message || err));
-        alert('Erro ao gerar PDF de fallback: ' + (err.message || err));
-      }
-    }
-
-    // Eventos UI
-    $('btn-print-card').addEventListener('click', e => {
-      e.preventDefault();
-      const opts = $('print-options');
-      opts.style.display = (opts.style.display === 'flex' ? 'none' : 'flex');
-    });
-
-    $('btn-print-front').addEventListener('click', async e => { e.preventDefault(); await printSinglePage(0); });
-    $('btn-print-back').addEventListener('click', async e => { e.preventDefault(); await printSinglePage(1); });
-
-    // inicial
-    (function init(){ setStatus('Aguardando ação. model.html deve estar na mesma pasta.'); })();
-  </script>
 </body>
 </html>
-
